@@ -1,6 +1,6 @@
 # gen(2022)
 
-some scripts to generate a spotify playlist based on data from various sources
+some scripts to generate a spotify playlist exlusively with tracks from 2022, based on data from various sources
 
 ## requirements
 
