@@ -12,6 +12,10 @@ you may use data from a tracker or rateyourmusic, or both in combination.
 
 ### fetch_from_tracker
 
+```
+poetry run python fetch_from_tracker.py [-h] [--apikey APIKEY] tracker_url target
+```
+
 the command requires
 
 - `tracker_url`, e.g. "https://mytracker.com/"
@@ -24,6 +28,10 @@ apikey = "your_api_key_here"
 ```
 
 ### parse_rym_html
+
+```
+poetry run python parse_rym_html.py [-h] dir target
+```
 
 first, you'll need a populated rym_html folder.
 
@@ -44,6 +52,10 @@ the command requires
 
 
 ### generate_playlist
+
+```
+poetry run python generate_playlist.py [-h] data_dir playlist_url
+```
 
 this command should be run after some data has been generated in `data/`
 
