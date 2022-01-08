@@ -15,7 +15,13 @@ if not parser.apikey:
         import secret
     except ImportError:
         print("apikey was not passed as argument, and secret.py was not found")
-    api_key = secret.apikey
+        exit()
+    try:
+        api_key = secret.apikey
+    except:
+        print("apikey variable seems to not exist in secret.py")
+        exit()
+
 else:
     api_key = parser.apikey
 
