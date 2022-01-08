@@ -26,14 +26,13 @@ if not base_url.endswith("/"):
 
 def req(page):
     request_url = f"ajax.php?action=browse&page={page}&year=2022"
-    headers = {
-        "authorization": api_key
-    }
+    headers = {"authorization": api_key}
     r = requests.get(base_url + request_url, headers=headers)
     if r.status_code == 200:
         return r.json()
     else:
         print(r)
+
 
 page = 1
 total_pages = 0
@@ -49,12 +48,14 @@ while page != total_pages:
     for release in releases:
         if "category" in release and release["category"] in ["Audiobooks"]:
             continue
-        total_releases.append(dict(
-            title=release["groupName"],
-            artist=release["artist"],
-            release_type=release["releaseType"],
-            genres=release["tags"]
-        ))
+        total_releases.append(
+            dict(
+                title=release["groupName"],
+                artist=release["artist"],
+                release_type=release["releaseType"],
+                genres=release["tags"],
+            )
+        )
     time.sleep(5)
     page += 1
 

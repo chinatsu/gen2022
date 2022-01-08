@@ -1,4 +1,5 @@
 import json
+
 try:
     import secret
 except ImportError:
@@ -23,15 +24,19 @@ sp = Spotify(auth_manager=SpotifyOAuth(scope=scope))
 playlist_id = args.playlist_url.split("?")[0].split("/")[-1]
 added_titles = []
 
+
 def search_and_add_song(term, list_id):
     search = sp.search(term, type="album")
-    for item in search['albums']['items']:
-        artist = ", ".join(x['name'] for x in item['artists'])
-        title = item['name']
-        if f"{artist} - {title}".lower() == term.lower() and item["release_date"].startswith("2022"):
+    for item in search["albums"]["items"]:
+        artist = ", ".join(x["name"] for x in item["artists"])
+        title = item["name"]
+        if f"{artist} - {title}".lower() == term.lower() and item[
+            "release_date"
+        ].startswith("2022"):
             add_album_to_playlist(item["id"], list_id)
             return True
     return False
+
 
 def add_album_to_playlist(album_id, list_id):
     album = sp.album(album_id)
@@ -43,13 +48,16 @@ for root, _, filenames in os.walk(args.data_dir):
     for filename in filenames:
         if filename.endswith(".json"):
             fname = os.path.join(root, filename)
-            with open(fname, 'r', encoding="utf-8") as f:
+            with open(fname, "r", encoding="utf-8") as f:
                 albums = json.load(f)
             for album in albums:
-                if "release_type" in album and album["release_type"] not in ["EP", "Album"]:
+                if "release_type" in album and album["release_type"] not in [
+                    "EP",
+                    "Album",
+                ]:
                     continue
-                artist = album['artist']
-                title = album['title']
+                artist = album["artist"]
+                title = album["title"]
                 term = f"{artist} - {title}"
                 if term in added_titles:
                     continue
