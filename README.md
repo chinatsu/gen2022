@@ -2,6 +2,8 @@
 
 some scripts to generate a spotify playlist exlusively with tracks from 2022, based on data from various sources
 
+these scripts were used to make this playlist: https://open.spotify.com/playlist/3yfiGFlPTMTBfKJeqGA4sm
+
 ## requirements
 
 install poetry and run `poetry install`
