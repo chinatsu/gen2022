@@ -36,8 +36,6 @@ def req(page):
     r = requests.get(base_url + request_url, headers=headers)
     if r.status_code == 200:
         return r.json()
-    else:
-        print(r)
 
 
 page = 1

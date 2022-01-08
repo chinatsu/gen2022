@@ -62,11 +62,11 @@ for root, _, filenames in os.walk(args.data_dir):
                 if term in added_titles:
                     continue
                 if search_and_add_song(term, playlist_id):
-                    print(f"Added {term} ({', '.join(album['genres'])})")
+                    pass
                 elif "urls" in album and "spotify" in album["urls"]:
                     album_id = album["urls"]["spotify"].split("?")[0].split("/")[-1]
                     add_album_to_playlist(album_id, playlist_id)
-                    print(f"Added {term} ({', '.join(album['genres'])})")
                 added_titles.append(term)
+                print(f"Added {term} ({', '.join(album['genres'])})")
 
-print(f"Added {len(added_titles)} albums to spotify playlist")
+print(f"Added {len(added_titles)} albums to Spotify playlist")
