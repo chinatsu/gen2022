@@ -32,6 +32,8 @@ for root, _, filenames in os.walk(args.dir):
                     urls = ast.literal_eval(
                         release.find(class_="linkfire_container")["data-track-urls"]
                     )
+                    if not "2022" in release_date:
+                        continue
                     albums.append(
                         {
                             "title": title,
@@ -41,7 +43,43 @@ for root, _, filenames in os.walk(args.dir):
                             "urls": urls,
                         }
                     )
+    for filename in filenames:
+        if filename == "newmusic.html":
+            # special case :)
+            # i put it here after the first loop to ensure that these entries are at the end of the list
+            # the reason is that the data here is slightly worse than above, and we prefer the better data
+            #
+            # i go to https://rateyourmusic.com/new-music/
+            # and sort by date under all new releases,
+            # then i load everything until i hit a 2021 release,
+            # open the inspector and copy the entire DOM by selecting the html tag
+            # and pressing ctrl+c. i then save that into newmusic.html
+            # this branch should then handle each entry in that list
+            fname = os.path.join(root, filename)
+            with open(fname, "r", encoding="utf-8") as f:
+                soup = BeautifulSoup(f.read(), "html.parser")
+                releases = soup.find_all(class_="newreleases_text_stats_container")
+                for release in releases:
+                    release_date = release.find(class_="newreleases_item_releasedate").text.strip()
+                    if not "2022" in release_date:
+                        continue
+                    title = release.find(class_="album").text.strip()
+                    artist = release.find(class_="artist").text.strip()
+                    genres = [x.text.strip() for x in release.find_all(class_="newreleases_item_genres")]
+                    albums.append(
+                        {
+                            "title": title,
+                            "artist": artist,
+                            "genres": genres,
+                            "release_date": release_date
+                        }
+                    )
 
 with open(args.target, "w", encoding="utf-8") as f:
-    albums = [ast.literal_eval(el1) for el1 in set([str(el2) for el2 in albums])]
-    json.dump(albums, f, ensure_ascii=False, indent=2, sort_keys=True)
+    unique_albums = []
+    for album in albums:
+        term = album["artist"]+album["title"]+album["release_date"]
+        if not term in [x["artist"]+x["title"]+x["release_date"] for x in unique_albums]:
+            unique_albums.append(album)
+    print(f"Saving {len(unique_albums)} albums to {args.target}")
+    json.dump(unique_albums, f, ensure_ascii=False, indent=2, sort_keys=True)

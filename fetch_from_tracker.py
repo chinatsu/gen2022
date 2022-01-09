@@ -59,11 +59,11 @@ while page != total_pages:
                 genres=release["tags"],
             )
         )
-        print(f"Releases: {len(total_releases)}\r", end="")
+    print(f"Iterating page {page}/{total_pages}, sleeping for 5 seconds")
     time.sleep(5)
     page += 1
 
-print()
 
 with open(args.target, "w", encoding="utf-8") as f:
+    print(f"Saving {len(total_releases)} albums to {args.target}")
     json.dump(total_releases, f, indent=2, sort_keys=True, ensure_ascii=False)
