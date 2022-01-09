@@ -56,7 +56,7 @@ the command requires
 ### generate_playlist
 
 ```
-poetry run python generate_playlist.py [-h] data_dir playlist_url
+poetry run python generate_playlist.py [-h] [--genre-file GENRE_FILE] data_dir playlist_url
 ```
 
 this command should be run after some data has been generated in `data/`
@@ -74,3 +74,18 @@ the command requires
 - `data_dir`, e.g. "data/"
 - `playlist_url`, it's best to create a new empty playlist, right click it and select share -> copy link to playlist. use this as the argument
 
+optionally, a json-file may be passed in with `--genre-file`. 
+this will pass every potential release through a filter, only allowing stuff that results in a partial match with the genre file.
+
+the file is expected to have this kind of format:
+
+```
+[
+  "sludge",
+  "trance",
+  "jazz",
+  "punk"
+]
+```
+
+this will match on genres such as `atmospheric sludge`, `progressive trance`, `psytrance`, `nu jazz`, `crustpunk`, and so on.
