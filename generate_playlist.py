@@ -12,6 +12,7 @@ from thefuzz import fuzz, process
 parser = ArgumentParser()
 parser.add_argument("data_dir")
 parser.add_argument("playlist_url")
+parser.add_argument("--genre-file")
 args = parser.parse_args()
 
 if not os.path.isdir(args.data_dir):
@@ -23,6 +24,11 @@ sp = Spotify(auth_manager=SpotifyOAuth(scope=scope))
 
 playlist_id = args.playlist_url.split("?")[0].split("/")[-1]
 added_titles = []
+allowed_genres = []
+
+if args.genre_file:
+    with open(args.genre_file) as f:
+        allowed_genres = json.load(f)
 
 
 def search_and_add_song(artist, title, list_id):
@@ -48,10 +54,27 @@ def add_album_to_playlist(album_id, list_id):
     if not album["release_date"].startswith("2022"):
         print(f"!!! {term} appears to have been released in {album['release_date']}, skipping")
         return False
+
+    def ok(genres):
+        for genre in genres:
+            for allowed in allowed_genres:
+                if allowed in genre:
+                    return True
+        return False
+    if len(allowed_genres) > 0:
+        sp_artist = sp.artist(album["artists"][0]["id"])
+        ok = ok(sp_artist["genres"])
+        if not ok:
+            return False
+        print(f"Adding {term} ({', '.join(sp_artist['genres'])})")
+    else:
+        print(f"Adding {term}")
+        ok = True
+    
     tracks = [f"spotify:track:{x['id']}" for x in album["tracks"]["items"]]
     sp.playlist_add_items(playlist_id=list_id, items=tracks)
     added_titles.append(term)
-    print(f"Added {term} ({', '.join(album['genres'])})")
+    
     return True
 
 
