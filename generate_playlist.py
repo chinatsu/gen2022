@@ -31,7 +31,7 @@ def search_and_add_song(artist, title, list_id):
         artist_score = process.extractOne(artist.lower(), [a["name"].lower() for a in item["artists"]])[-1]
         title_score = fuzz.partial_ratio(title.lower(), item["name"].lower())
         score = artist_score + title_score
-        if score > 180 and item["release_date"].startswith("2022"):
+        if score > 180:
             return add_album_to_playlist(item["id"], list_id)
         
     return False
@@ -43,7 +43,10 @@ def add_album_to_playlist(album_id, list_id):
     title = album["name"]
     term = f"{artist} - {title}"
     if term in added_titles:
-        print(f"Album {term} should already be added")
+        print(f"!!! Album {term} should already be added")
+        return False
+    if not album["release_date"].startswith("2022"):
+        print(f"!!! {term} appears to have been released in {album['release_date']}, skipping")
         return False
     tracks = [f"spotify:track:{x['id']}" for x in album["tracks"]["items"]]
     sp.playlist_add_items(playlist_id=list_id, items=tracks)
