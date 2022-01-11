@@ -49,7 +49,7 @@ while page != total_pages:
         total_pages = r["response"]["pages"]
     releases = r["response"]["results"]
     for release in releases:
-        if "category" in release and release["category"] in ["Audiobooks"]:
+        if "category" in release and release["category"] in ["Audiobooks", "Comedy"]:
             continue
         total_releases.append(
             dict(
