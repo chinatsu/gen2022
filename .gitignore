@@ -152,5 +152,6 @@ cython_debug/
 #.idea/
 secret.py
 data/*.json
+*.json
 rym_html/*.htm
 rym_html/*.html

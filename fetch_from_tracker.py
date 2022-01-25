@@ -42,7 +42,11 @@ total_pages = 0
 total_releases = []
 
 while page != total_pages:
-    r = req(page)
+    try:
+        r = req(page)
+    except:
+        time.sleep(5)
+        continue
     if not r:
         break
     if not total_pages:

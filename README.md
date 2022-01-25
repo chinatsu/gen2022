@@ -56,7 +56,7 @@ the command requires
 ### generate_playlist
 
 ```
-poetry run python generate_playlist.py [-h] [--genre-file GENRE_FILE] data_dir playlist_url
+poetry run python generate_playlist.py [-h] [--genre-file GENRE_FILE] [--playlist-id PLAYLIST_ID] data_dir
 ```
 
 this command should be run after some data has been generated in `data/`
@@ -72,7 +72,7 @@ you can find the values for these in https://developer.spotify.com/dashboard/app
 the command requires
 
 - `data_dir`, e.g. "data/"
-- `playlist_url`, it's best to create a new empty playlist, right click it and select share -> copy link to playlist. use this as the argument
+- `playlist_id`, it's best to create a new empty playlist, right click it and select share -> while holding ctrl or alt, copy spotify uri. use the part after `spotify:playlist:` as the argument
 
 optionally, a json-file may be passed in with `--genre-file`. 
 this will pass every potential release through a filter, only allowing stuff that results in a partial match with the genre file.

@@ -8,10 +8,11 @@ from spotipy.oauth2 import SpotifyOAuth
 from argparse import ArgumentParser
 import os
 from thefuzz import fuzz, process
-from datetime import date, datetime
+from datetime import datetime
 
 parser = ArgumentParser()
 parser.add_argument("data_dir")
+parser.add_argument("--playlist-id")
 parser.add_argument("--genre-file")
 args = parser.parse_args()
 
@@ -54,7 +55,7 @@ def get_albums_in_playlist(playlist_id):
 def get_week_playlists():
     p = get_all_playlists()
     playlist_ids = {}
-    for x in range(1, date.today().isocalendar()[1]+3):
+    for x in range(1, 52):
         target = f"gen(2022): week {x}"
         found = False
         for playlist in p:
@@ -67,22 +68,37 @@ def get_week_playlists():
         if not found:
             playlist_ids[f"{x}"] = {
                 "titles": [],
-                "id": create_playlist(target, f"all songs released in week {x} of 2022")
+                "id": create_playlist(target, f"only songs released in week {x} of 2022")
             }
     return playlist_ids
+
+def get_playlist(playlist_id):
+    # hacky hacky because i'm lazy :)
+    playlist_ids = {}
+    titles = get_albums_in_playlist(playlist_id)
+    for x in range(1, 52):
+        playlist_ids[f"{x}"] = {
+            "titles": titles,
+            "id": playlist_id,
+        }
+    return playlist_ids
+
 
 def format_album(song):
     title = song["track"]["album"]["name"]
     artist = song["track"]["album"]["artists"][0]["name"]
     return f"{artist} - {title}"
 
-week_playlists = get_week_playlists()
 
+week_playlists = {}
 allowed_genres = []
 
-if args.genre_file:
+if args.genre_file and args.playlist_id:
     with open(args.genre_file) as f:
         allowed_genres = json.load(f)
+    week_playlists = get_playlist(args.playlist_id)
+else:
+    week_playlists = get_week_playlists()
 
 def is_already_in_playlist(album, playlists):
     # it's just a maybe-check, but it should help with some speed anyway
@@ -95,11 +111,11 @@ def is_already_in_playlist(album, playlists):
             if rls[0] in ["01", "02"] and rls[1] == "January":
                 week = "1"
                 if term in playlists[week]["titles"]:
-                    print(f"!!! Album {term} should already be added")
+                    #print(f"!!! Album {term} should already be added")
                     return True
             week = datetime.strptime(" ".join(rls), "%d %B %Y").date().isocalendar().week
             if term in playlists[f"{week}"]["titles"]:
-                print(f"!!! Album {term} should already be added")
+                #print(f"!!! Album {term} should already be added")
                 return True
         except:
             pass
@@ -131,7 +147,7 @@ def add_album_to_playlist(album_id, playlists):
     term = f"{artist} - {title}"
     release_date = album["release_date"]
     if not release_date.startswith("2022"):
-        print(f"!!! {term} appears to have been released in {album['release_date']}, skipping")
+        #print(f"!!! {term} appears to have been released in {album['release_date']}, skipping")
         return False
     week = datetime.strptime(release_date, "%Y-%m-%d").date().isocalendar().week
     if len(release_date) != 10:
@@ -143,7 +159,7 @@ def add_album_to_playlist(album_id, playlists):
         return False
     playlist = playlists[f"{week}"]
     if term in playlist["titles"]:
-        print(f"!!! Album {term} should already be added")
+        #print(f"!!! Album {term} should already be added")
         return False
     if len(allowed_genres) > 0:
         sp_artist = sp.artist(album["artists"][0]["id"])
